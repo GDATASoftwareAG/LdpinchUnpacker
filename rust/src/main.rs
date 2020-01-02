@@ -1,7 +1,7 @@
 extern crate clap;
 use clap::{App, Arg};
 use std::fs::File;
-use std::io;
+use std::{io, u8};
 use std::io::prelude::*;
 
 fn main() -> io::Result<()> {
@@ -55,8 +55,8 @@ fn unpack(start: usize, end: usize, buffer: &mut Vec<u8>) -> () {
     let mut key = 0x54;
     for i in start + 1..end + 1 {
         buffer[i] ^= key;
-        key += 0x12; // Leads to overflow
+        key = key.wrapping_add(0x12); // key += 0x12; Leads to overflow
         key ^= 0x68;
-        key -= 0x04; // Lead to undercflow
+        key = key.wrapping_sub(0x04); // key -= 0x04; Leads to underflow
     }
 }

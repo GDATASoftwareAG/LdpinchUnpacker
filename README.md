@@ -45,7 +45,3 @@ The *Rust* version can be easily build with:
 ```bash
 cargo build --release
 ```
-
-**Attention**: It's important to build for release and not debug, as the unpacker uses an byte over- and underflow, with will be catched by *Rust* in *Debug* mode.
-
-To build the *C* version open the project in *Visual Studio* and build.
