@@ -1,8 +1,8 @@
 extern crate clap;
 use clap::{App, Arg};
 use std::fs::File;
-use std::{io, u8};
 use std::io::prelude::*;
+use std::{io, u8};
 
 fn main() -> io::Result<()> {
     let matches = App::new("LdpInch Unpacker")
@@ -23,21 +23,26 @@ fn main() -> io::Result<()> {
         )
         .get_matches();
 
-    let input = matches.value_of("input").unwrap();
-    let output = matches.value_of("output").unwrap();
+    let input = match matches.value_of("input") {
+        Some(s) => s,
+        None => panic!("No input give."),
+    };
+
+    let output = match matches.value_of("output") {
+        Some(s) => s,
+        None => panic!("No output given."),
+    };
 
     let mut buffer = read_binary(input)?;
     unpack(0x480, 0x1773, &mut buffer);
-    write_binary(output, &mut buffer)?;
-
-    Ok(())
+    write_binary(output, &mut buffer)
 }
 
 fn read_binary(file: &str) -> io::Result<Vec<u8>> {
     let mut f = File::open(file)?;
     let mut buffer = Vec::new();
     f.read_to_end(&mut buffer)?;
-    return Ok(buffer);
+    Ok(buffer)
 }
 
 fn write_binary(file: &str, buffer: &Vec<u8>) -> io::Result<()> {
