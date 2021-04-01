@@ -6,7 +6,7 @@ use std::{io, u8};
 
 fn main() -> io::Result<()> {
     let matches = App::new("LdpInch Unpacker")
-        .version("1.0.0")
+        .version("1.0.1")
         .about("Unpack LdpInch malware.")
         .arg(
             Arg::with_name("input")
@@ -18,20 +18,12 @@ fn main() -> io::Result<()> {
         .arg(
             Arg::with_name("output")
                 .short("o")
-                .help("Unpacked output file.")
-                .default_value("unpacked.bin"),
+                .help("Unpacked output file."),
         )
         .get_matches();
 
-    let input = match matches.value_of("input") {
-        Some(s) => s,
-        None => panic!("No input give."),
-    };
-
-    let output = match matches.value_of("output") {
-        Some(s) => s,
-        None => panic!("No output given."),
-    };
+    let input = matches.value_of("input").unwrap();
+    let output = matches.value_of("output").unwrap_or("unpacked.bin");
 
     let mut buffer = read_binary(input)?;
     unpack(0x480, 0x1773, &mut buffer);
@@ -39,16 +31,13 @@ fn main() -> io::Result<()> {
 }
 
 fn read_binary(file: &str) -> io::Result<Vec<u8>> {
-    let mut f = File::open(file)?;
     let mut buffer = Vec::new();
-    f.read_to_end(&mut buffer)?;
+    File::open(file)?.read_to_end(&mut buffer)?;
     Ok(buffer)
 }
 
 fn write_binary(file: &str, buffer: &Vec<u8>) -> io::Result<()> {
-    let mut f = File::create(file)?;
-    f.write_all(buffer)?;
-    Ok(())
+    File::create(file)?.write_all(buffer)
 }
 
 fn unpack(start: usize, end: usize, buffer: &mut Vec<u8>) -> () {
